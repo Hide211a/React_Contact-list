@@ -1,6 +1,19 @@
 import { Link } from "react-router";
+import { useDispatch } from "react-redux";
+import { searchContacts, clearAllFilters } from "../../redux/action";
 
-export default function Header({searchBySymbols}) {
+export default function Header() {
+    const dispatch = useDispatch();
+
+    const handleSearch = (e) => {
+        const value = e.target.value;
+        if (value === '') {
+            dispatch(clearAllFilters());
+        } else {
+            dispatch(searchContacts(value));
+        }
+    };
+
     return(
         <header className="container rounded shadow-lg bg-white mb-3 mt-3 ">
             <div className="row">
@@ -17,7 +30,7 @@ export default function Header({searchBySymbols}) {
                            </div>
 
                             <form className="d-flex" role="search">
-                                <input onInput={e => searchBySymbols(e.target.value)} className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+                                <input onInput={handleSearch} className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
                             </form>
                         </div>
                     </nav>

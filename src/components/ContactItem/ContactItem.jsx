@@ -2,15 +2,35 @@ import { Link } from "react-router"
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { useState } from "react";
+import { useSelector , useDispatch } from "react-redux";
+import { deleteContact } from "../../redux/action";
 
-export default function ContactItem({ stor, deleteContact }) {
+export default function ContactItem() {
 
   const [showModal, setShowModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
 
-  const filteredContacts = stor.search ? stor.contacts.filter(contact => `${contact.firstName} ${contact.lastName} ${contact.email} ${contact.phone}`.toLowerCase().includes(stor.search.toLowerCase()) ) : stor.contacts
+  const contacts = useSelector(state => state.contacts)
+  const search = useSelector(state => state.search)
+  const statusFilter = useSelector(state => state.statusFilter)
+  const dispatch = useDispatch()
+
+  // Фільтрація контактів за пошуком та статусом
+  let filteredContacts = contacts;
+  
+  // Спочатку фільтруємо за пошуком
+  if (search) {
+    filteredContacts = filteredContacts.filter(contact => 
+      `${contact.firstName} ${contact.lastName} ${contact.email} ${contact.phone}`.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+  
+  // Потім фільтруємо за статусом
+  if (statusFilter) {
+    filteredContacts = filteredContacts.filter(contact => contact.status === statusFilter);
+  }
 
   const handleDeleteClick = (id) => {
     setDeleteId(id);
@@ -18,7 +38,7 @@ export default function ContactItem({ stor, deleteContact }) {
   };
 
   const handleConfirmDelete = () => {
-    deleteContact(deleteId);
+    dispatch(deleteContact(deleteId));
     setShowModal(false);
     setDeleteId(null);
   };
