@@ -1,35 +1,31 @@
 import { useSelector, useDispatch } from "react-redux";
-import { filterByStatus, clearAllFilters } from "../../redux/action";
+import { filterByStatus, clearAllFilters, addStatus, deleteStatus } from "../../redux/action";
+import { useState } from "react";
+import Modal from "../Modal/Modal";
 
 export default function Sidebar() {
 
   const contacts = useSelector(state => state.contacts)
   const search = useSelector(state => state.search)
   const statusFilter = useSelector(state => state.statusFilter)
+  const contactStatuss = useSelector(state => state.contactStatuss)
   const dispatch = useDispatch()
 
-  // Фільтрація контактів за пошуком (як у ContactItem)
+  const [showAddStatusModal, setShowAddStatusModal] = useState(false);
+  const [showDeleteStatusModal, setShowDeleteStatusModal] = useState(false);
+  const [statusToDelete, setStatusToDelete] = useState('');
+  const [newStatusName, setNewStatusName] = useState('');
+  const [newStatusColor, setNewStatusColor] = useState('#6c757d');
+  const [statusError, setStatusError] = useState('');
+
+
   const filteredContacts = search ?
     contacts.filter(contact => `${contact.firstName} ${contact.lastName} ${contact.email} ${contact.phone}`.toLowerCase().includes(search.toLowerCase()))
     : contacts;
 
   const totalContacts = filteredContacts.length;
 
-  const statusCounts = {
-    work: 0,
-    family: 0,
-    private: 0,
-    friends: 0,
-    others: 0
-  }
-
-  // Рахуємо статистику тільки для відфільтрованих контактів
-  filteredContacts.forEach(contact => {
-    statusCounts[contact.status] +=1
-  });
-
   const handleStatusClick = (status) => {
-    // Якщо статус вже активний, знімаємо фільтр
     if (statusFilter === status) {
       dispatch(filterByStatus(''));
     } else {
@@ -41,10 +37,44 @@ export default function Sidebar() {
     dispatch(clearAllFilters());
   };
 
+  const handleAddStatus = () => {
+    if (newStatusName.trim()) {
+      dispatch(addStatus(newStatusName.trim().toLowerCase(), newStatusColor));
+      setNewStatusName('');
+      setNewStatusColor('#6c757d');
+      setShowAddStatusModal(false);
+      setStatusError('');
+    } else {
+      setStatusError('Назва статусу не може бути порожньою.');
+    }
+  };
+
+  const handleDeleteStatusClick = (status) => {
+    setStatusToDelete(status);
+    setShowDeleteStatusModal(true);
+  };
+
+  const handleConfirmDeleteStatus = () => {
+    dispatch(deleteStatus(statusToDelete));
+    setShowDeleteStatusModal(false);
+    setStatusToDelete('');
+  };
+
   const getStatusClass = (status) => {
     const baseClass = "d-flex justify-content-between mb-3";
     const isActive = statusFilter === status;
     return `${baseClass} ${isActive ? 'bg-light border border-primary' : ''}`;
+  };
+
+  const getStatusStyle = (status) => {
+    const statusData = contactStatuss[status];
+    return {
+      backgroundColor: statusData ? statusData.bg : '#6c757d',
+      color: 'white',
+      padding: '8px 12px',
+      borderRadius: '4px',
+      fontWeight: 'bold'
+    };
   };
 
   return(
@@ -66,30 +96,103 @@ export default function Sidebar() {
               </div>
             )}
             <div className="list fs-5">
-              <div className={getStatusClass('work')} style={{cursor: 'pointer'}} onClick={() => handleStatusClick('work')}>
-                <div className="bg-success">Work</div>
-                <span>{statusCounts.work}</span>
-              </div>
-              <div className={getStatusClass('family')} style={{cursor: 'pointer'}} onClick={() => handleStatusClick('family')}>
-                <div className="bg-warning">Family</div>
-                <span>{statusCounts.family}</span>
-              </div>
-              <div className={getStatusClass('friends')} style={{cursor: 'pointer'}} onClick={() => handleStatusClick('friends')}>
-                <div className="bg-info">Friends</div>
-                <span>{statusCounts.friends}</span>
-              </div>
-              <div className={getStatusClass('private')} style={{cursor: 'pointer'}} onClick={() => handleStatusClick('private')}>
-                <div className="bg-primary">Private</div>
-                <span>{statusCounts.private}</span>
-              </div>
-              <div className={getStatusClass('others')} style={{cursor: 'pointer'}} onClick={() => handleStatusClick('others')}>
-                <div className="bg-secondary">Others</div>
-                <span>{statusCounts.others}</span>
-              </div>
+              {Object.keys(contactStatuss).map(status => (
+                <div key={status} className={getStatusClass(status)} style={{cursor: 'pointer'}}>
+                  <div 
+                    style={getStatusStyle(status)} 
+                    onClick={() => handleStatusClick(status)}
+                    className="flex-grow-1 me-2"
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <span className="me-2">{filteredContacts.filter(contact => contact.status === status).length}</span>
+                    {status !== 'other' && (
+                      <button 
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteStatusClick(status);
+                        }}
+                        title="Видалити статус"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3">
+              <button 
+                className="btn btn-outline-primary btn-sm w-100" 
+                onClick={() => setShowAddStatusModal(true)}
+              >
+                + Add Status
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {showAddStatusModal && (
+        <Modal>
+          <div style={{background: '#fff', borderRadius: '12px', padding: '32px 24px', minWidth: '320px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'}}>
+            <h4 style={{marginBottom: '18px'}}>Додати новий статус</h4>
+            <div className="mb-3">
+              <label className="form-label">Назва статусу:</label>
+              <input 
+                type="text" 
+                className={`form-control ${statusError ? 'is-invalid' : ''}`}
+                value={newStatusName}
+                onChange={(e) => {
+                  setNewStatusName(e.target.value);
+                  if (statusError) setStatusError('');
+                }}
+                placeholder="Введіть назву статусу"
+              />
+              {statusError && (
+                <div className="invalid-feedback">
+                  {statusError}
+                </div>
+              )}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Колір:</label>
+              <input 
+                type="color" 
+                className="form-control" 
+                value={newStatusColor}
+                onChange={(e) => setNewStatusColor(e.target.value)}
+              />
+            </div>
+            <div style={{display: 'flex', gap: '16px', justifyContent: 'flex-end'}}>
+              <button className="btn btn-secondary" onClick={() => {
+                setShowAddStatusModal(false);
+                setStatusError('');
+              }}>Скасувати</button>
+              <button className="btn btn-primary" onClick={handleAddStatus}>Додати</button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Модальне вікно для підтвердження видалення статусу */}
+      {showDeleteStatusModal && (
+        <Modal>
+          <div style={{background: '#fff', borderRadius: '12px', padding: '32px 24px', minWidth: '320px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'}}>
+            <h4 style={{marginBottom: '18px'}}>Видалити статус?</h4>
+            <p style={{marginBottom: '24px'}}>
+              Ви дійсно хочете видалити статус "{statusToDelete.charAt(0).toUpperCase() + statusToDelete.slice(1)}"? 
+              Всі контакти з цим статусом будуть переміщені в "Other".
+            </p>
+            <div style={{display: 'flex', gap: '16px', justifyContent: 'flex-end'}}>
+              <button className="btn btn-secondary" onClick={() => setShowDeleteStatusModal(false)}>Скасувати</button>
+              <button className="btn btn-danger" onClick={handleConfirmDeleteStatus}>Видалити</button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </aside>
   )
 }

@@ -1,9 +1,11 @@
+import './ContactItem.scss'
 import { Link } from "react-router"
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { useState } from "react";
 import { useSelector , useDispatch } from "react-redux";
-import { deleteContact } from "../../redux/action";
+import { deleteContact , toggleFavorite} from "../../redux/action";
+
 
 export default function ContactItem() {
 
@@ -15,21 +17,29 @@ export default function ContactItem() {
   const contacts = useSelector(state => state.contacts)
   const search = useSelector(state => state.search)
   const statusFilter = useSelector(state => state.statusFilter)
+  const contactStatuss = useSelector(state => state.contactStatuss)
   const dispatch = useDispatch()
 
-  // Фільтрація контактів за пошуком та статусом
   let filteredContacts = contacts;
   
-  // Спочатку фільтруємо за пошуком
+
   if (search) {
     filteredContacts = filteredContacts.filter(contact => 
       `${contact.firstName} ${contact.lastName} ${contact.email} ${contact.phone}`.toLowerCase().includes(search.toLowerCase())
     );
   }
   
-  // Потім фільтруємо за статусом
+
   if (statusFilter) {
-    filteredContacts = filteredContacts.filter(contact => contact.status === statusFilter);
+    if (statusFilter === 'other') {
+      // Фільтруємо контакти, які не мають стандартних статусів
+      const validStatuses = Object.keys(contactStatuss).filter(s => s !== 'other');
+      filteredContacts = filteredContacts.filter(contact => 
+        !validStatuses.includes(contact.status)
+      );
+    } else {
+      filteredContacts = filteredContacts.filter(contact => contact.status === statusFilter);
+    }
   }
 
   const handleDeleteClick = (id) => {
@@ -54,6 +64,11 @@ export default function ContactItem() {
     setShowInfoModal(true);
   };
 
+  const handleFavoriteClick = (e, contactId) => {
+    e.stopPropagation(); 
+    dispatch(toggleFavorite(contactId));
+  };
+
   const handleCloseInfoModal = () => {
     setShowInfoModal(false);
     setSelectedContact(null);
@@ -75,8 +90,13 @@ export default function ContactItem() {
         <tbody>
         {filteredContacts.map(contact => (
             <tr key={contact.id} className="align-middle text-center" style={{cursor:'pointer'}} onClick={(e) => handleRowClick(contact, e)}>
-            <td scope="row">
-              <img className="rounded-circle" src={`https://randomuser.me/api/portraits/${contact.gender}/${contact.avatar}.jpg`} alt="" />
+            <td className='position-relative' scope="row">
+              <img className={`rounded-circle border border-3 ${contact.gender === 'women' ? 'border-danger' : 'border-primary' }`} src={`https://randomuser.me/api/portraits/${contact.gender}/${contact.avatar}.jpg`} alt="" />
+
+              <button className="favoriteBtn" onClick={(e) => handleFavoriteClick(e, contact.id)}>
+                  {contact.favorite ? '♥' : '♡' }
+              </button>
+
             </td>
             <td className="fs-4">{contact.firstName}<br/>{contact.lastName}</td>
             <td className="fs-5">{contact.phone}<br/>{contact.email}</td>

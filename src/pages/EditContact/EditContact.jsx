@@ -10,6 +10,7 @@ export default function EditContact({}) {
     const {id} = useParams()
     const navigate = useNavigate();
     const contacts = useSelector(state => state.contacts)
+    const contactStatuss = useSelector(state => state.contactStatuss)
     const dispatch = useDispatch()
 
     const contact = contacts.find(contact => contact.id === id)
@@ -73,11 +74,11 @@ export default function EditContact({}) {
                                 <label htmlFor="status">Status</label>
                                 <Field className='form-control fs-5' as='select' name='status'>
                                     <option value="">Choose status</option>
-                                    <option value="work">Work</option>
-                                    <option value="family">Family</option>
-                                    <option value="friends">Friends</option>
-                                    <option value="private">Private</option>
-                                    <option value="others">Others</option>
+                                    {Object.keys(contactStatuss).map(status => (
+                                        <option key={status} value={status}>
+                                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                                        </option>
+                                    ))}
                                 </Field>
                                 <ErrorMessage name='status' component='p' className='text-danger position-absolute'/>
                             </div>

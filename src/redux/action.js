@@ -1,4 +1,12 @@
-import { ADD_CONTACT, DELETE_CONTACT, EDIT_CONTACT, SEARCH_CONTACTS, FILTER_BY_STATUS } from "./type"
+import { ADD_CONTACT, 
+        DELETE_CONTACT, 
+        EDIT_CONTACT, 
+        SEARCH_CONTACTS, 
+        FILTER_BY_STATUS,
+        TOGGLE_FAVORITE,
+        ADD_STATUS,
+        DELETE_STATUS }     
+    from "./type"
 
 export const deleteContact = (id) => {
     return {
@@ -40,3 +48,24 @@ export const clearAllFilters = () => {
         type: 'CLEAR_ALL_FILTERS'
     }
 } 
+ 
+export const toggleFavorite = (id) => {
+    return {
+       type : TOGGLE_FAVORITE,
+        payload: id
+    }
+}
+
+export const addStatus = (status, bgColor) => {
+    return {
+        type: ADD_STATUS,
+        payload: { status, bgColor }
+    }
+}
+
+export const deleteStatus = (status) => {
+    return {
+        type: DELETE_STATUS,
+        payload: status
+    }
+}
