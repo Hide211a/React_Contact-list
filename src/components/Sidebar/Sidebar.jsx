@@ -1,6 +1,6 @@
 import './Sidebar.scss';
 import { useSelector, useDispatch } from "react-redux";
-import { filterByStatus, clearAllFilters, addStatus, deleteStatus } from "../../redux/action";
+import { filterByStatus, clearAllFilters, addStatus, deleteStatus, editStatus } from "../../redux/action";
 import { useState } from "react";
 import Modal from "../Modal/Modal";
 
@@ -18,6 +18,10 @@ export default function Sidebar() {
   const [newStatusName, setNewStatusName] = useState('');
   const [newStatusColor, setNewStatusColor] = useState('#6c757d');
   const [statusError, setStatusError] = useState('');
+  const [showEditStatusModal, setShowEditStatusModal] = useState(false);
+  const [statusToEdit, setStatusToEdit] = useState('');
+  const [editStatusName, setEditStatusName] = useState('');
+  const [editStatusColor, setEditStatusColor] = useState('#6c757d');
 
 
   const filteredContacts = search ?
@@ -59,6 +63,13 @@ export default function Sidebar() {
     dispatch(deleteStatus(statusToDelete));
     setShowDeleteStatusModal(false);
     setStatusToDelete('');
+  };
+
+  const handleEditStatusClick = (status) => {
+    setStatusToEdit(status);
+    setEditStatusName(status);
+    setEditStatusColor(contactStatuss[status]?.bg || '#6c757d');
+    setShowEditStatusModal(true);
   };
 
   const getStatusClass = (status) => {
@@ -109,16 +120,28 @@ export default function Sidebar() {
                   <div className="d-flex align-items-center">
                     <span className="me-2">{filteredContacts.filter(contact => contact.status === status).length}</span>
                     {status !== 'other' && (
-                      <button 
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteStatusClick(status);
-                        }}
-                        title="Видалити статус"
-                      >
-                        ×
-                      </button>
+                      <>
+                        <button 
+                          className="btn btn-outline-secondary btn-sm me-1"
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleEditStatusClick(status);
+                          }}
+                          title="Редагувати статус"
+                        >
+                          <span role="img" aria-label="edit">✏️</span>
+                        </button>
+                        <button 
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteStatusClick(status);
+                          }}
+                          title="Видалити статус"
+                        >
+                          ×
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -190,6 +213,62 @@ export default function Sidebar() {
             <div style={{display: 'flex', gap: '16px', justifyContent: 'flex-end'}}>
               <button className="btn btn-secondary" onClick={() => setShowDeleteStatusModal(false)}>Скасувати</button>
               <button className="btn btn-danger" onClick={handleConfirmDeleteStatus}>Видалити</button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {showEditStatusModal && (
+        <Modal>
+          <div className="modal-ios-content">
+            <h4 className="mb-4">Редагувати статус</h4>
+            <div className="mb-3">
+              <label className="form-label">Назва статусу:</label>
+              <input 
+                type="text" 
+                className={`form-control ${statusError ? 'is-invalid' : ''}`}
+                value={editStatusName}
+                onChange={e => {
+                  setEditStatusName(e.target.value);
+                  if (statusError) setStatusError('');
+                }}
+                placeholder="Введіть нову назву статусу"
+              />
+              {statusError && (
+                <div className="invalid-feedback">
+                  {statusError}
+                </div>
+              )}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Колір:</label>
+              <input 
+                type="color" 
+                className="form-control" 
+                value={editStatusColor}
+                onChange={e => setEditStatusColor(e.target.value)}
+              />
+            </div>
+            <div style={{display: 'flex', gap: '16px', justifyContent: 'flex-end'}}>
+              <button className="btn btn-secondary" onClick={() => {
+                setShowEditStatusModal(false);
+                setStatusError('');
+              }}>Скасувати</button>
+              <button className="btn btn-primary" onClick={() => {
+                // Валідація
+                const trimmed = editStatusName.trim().toLowerCase();
+                if (!trimmed) {
+                  setStatusError('Назва статусу не може бути порожньою.');
+                  return;
+                }
+                if (trimmed !== statusToEdit && Object.keys(contactStatuss).includes(trimmed)) {
+                  setStatusError('Такий статус вже існує.');
+                  return;
+                }
+                dispatch(editStatus(statusToEdit, trimmed, editStatusColor));
+                setShowEditStatusModal(false);
+                setStatusError('');
+              }}>Зберегти</button>
             </div>
           </div>
         </Modal>
