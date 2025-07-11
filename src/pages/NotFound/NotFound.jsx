@@ -9,7 +9,7 @@ export default function NotFound() {
 
     useEffect(() => {
         let index = 0;
-        setText(''); // Скидаємо текст при кожному рендері
+        setText(''); 
         
         const typingInterval = setInterval(() => {
             if (index < originalText.length) {
@@ -17,11 +17,11 @@ export default function NotFound() {
                 index++;
             } else {
                 clearInterval(typingInterval);
-                setShowLink(true); // Показуємо посилання після завершення анімації
+                setShowLink(true); 
             }
-        }, 120); // Швидкість друкування
+        }, 120); 
 
-        return () => clearInterval(typingInterval); // Очищення при розмонтуванні компонента
+        return () => clearInterval(typingInterval); 
     }, []);
 
     return (

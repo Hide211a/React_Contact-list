@@ -30,9 +30,8 @@ export default function AddContact() {
     }
 
     return(
-        
-        <div className="container">
-            <div className="modal-content addPage rounded shadow">
+        <div className="container-fluid addcontact-ios">
+            <div className="addcontact-form">
                 <Formik initialValues={initialValues} validationSchema={contactValidationSchema} onSubmit={handleSubmin}>
                     {({isSubmitting}) => (
                       <Form>

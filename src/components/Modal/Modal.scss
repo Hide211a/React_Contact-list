@@ -1,0 +1,36 @@
+.modal-ios-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: modal-fade-in 0.18s cubic-bezier(.4,0,.2,1);
+}
+
+.modal-ios-content {
+  background: var(--background-secondary, #222226);
+  color: var(--text-main, #fff);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+  padding: 36px 32px;
+  min-width: 340px;
+  max-width: 96vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modal-pop-in 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-pop-in {
+  from { transform: scale(0.96); opacity: 0.7; }
+  to { transform: scale(1); opacity: 1; }
+} 

@@ -15,7 +15,6 @@ export default function EditContact({}) {
 
     const contact = contacts.find(contact => contact.id === id)
     
-    // Якщо контакт не знайдено, перенаправляємо на головну
     if (!contact) {
         navigate('/')
         return null
@@ -29,8 +28,8 @@ export default function EditContact({}) {
     }
 
     return( 
-        <div className="container">
-            <div className="modal-content addPage rounded shadow">
+        <div className="container-fluid addcontact-ios">
+            <div className="addcontact-form">
                 <Formik initialValues={initialValues} validationSchema={contactValidationSchema} onSubmit={handleSubmin}>
                     {({isSubmitting}) => (
                       <Form>

@@ -4,3 +4,112 @@
     padding: 40px 30px;
     margin: 10px auto;
 }
+
+.addcontact-ios {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.addcontact-form {
+  background: var(--background-secondary, #222226);
+  border-radius: var(--border-radius, 20px);
+  box-shadow: var(--box-shadow, 0 4px 24px rgba(0,0,0,0.4));
+  padding: 40px 32px 32px 32px;
+  min-width: 340px;
+  max-width: 600px;
+  width: 100%;
+  margin: 5px 0 24px 0;
+}
+
+.addcontact-form h1 {
+  color: var(--accent, #0a84ff);
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.addcontact-form label {
+  color: var(--text-main, #fff);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.addcontact-form .form-control[type="text"],
+.addcontact-form .form-control[type="email"],
+.addcontact-form .form-control[type="number"],
+.addcontact-form .form-control[type="select"],
+.addcontact-form select {
+  background: #23232a;
+  color: #fff;
+  border-radius: 12px;
+  border: 1.5px solid #333;
+  box-shadow: none;
+  font-size: 1.08rem;
+  padding: 10px 14px;
+  transition: border 0.18s, background 0.18s;
+}
+
+.addcontact-form .form-control:focus,
+.addcontact-form select:focus {
+  border: 1.5px solid var(--accent, #0a84ff);
+  background: #23233a;
+  color: #fff;
+}
+
+.addcontact-form .form-control::placeholder {
+  color: #b0b0b5;
+  opacity: 1;
+}
+
+.addcontact-form .form-check-label {
+  color: var(--text-secondary, #e5e5ea);
+  font-size: 1.08rem;
+}
+
+.addcontact-form .form-check-input {
+  accent-color: var(--accent, #0a84ff);
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 8px;
+}
+
+.addcontact-form .btn {
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 1.12rem;
+  padding: 14px 0;
+  width: 100%;
+  margin-top: 10px;
+  background: var(--accent, #0a84ff);
+  color: #fff;
+  border: none;
+  transition: background 0.18s, color 0.18s;
+}
+
+.addcontact-form .btn:disabled {
+  background: #444;
+  color: #bbb;
+}
+
+.addcontact-form .btn:hover:not(:disabled) {
+  background: #005ecb;
+}
+
+.addcontact-form .text-danger {
+  color: #ff4d4f !important;
+  font-size: 0.98rem;
+  margin-top: 4px;
+  position: static !important;
+}
+
+.addcontact-form .mb-4 {
+  margin-bottom: 22px !important;
+}
+
+.addcontact-form hr {
+  border-color: #333;
+  margin-bottom: 28px;
+}

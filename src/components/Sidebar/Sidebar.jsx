@@ -1,3 +1,4 @@
+import './Sidebar.scss';
 import { useSelector, useDispatch } from "react-redux";
 import { filterByStatus, clearAllFilters, addStatus, deleteStatus } from "../../redux/action";
 import { useState } from "react";
@@ -63,7 +64,7 @@ export default function Sidebar() {
   const getStatusClass = (status) => {
     const baseClass = "d-flex justify-content-between mb-3";
     const isActive = statusFilter === status;
-    return `${baseClass} ${isActive ? 'bg-light border border-primary' : ''}`;
+    return `${baseClass} ${isActive ? 'active-status' : ''}`;
   };
 
   const getStatusStyle = (status) => {
@@ -78,7 +79,7 @@ export default function Sidebar() {
   };
 
   return(
-    <aside className="container border-end position-sticky top-0">
+    <aside className="container position-sticky top-0 sidebar-ios">
       <div className="row">
         <div className="col-12">
           <div className="contacts-labels">
@@ -137,8 +138,8 @@ export default function Sidebar() {
 
       {showAddStatusModal && (
         <Modal>
-          <div style={{background: '#fff', borderRadius: '12px', padding: '32px 24px', minWidth: '320px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'}}>
-            <h4 style={{marginBottom: '18px'}}>Додати новий статус</h4>
+          <div className="modal-ios-content">
+            <h4 className="mb-4">Додати новий статус</h4>
             <div className="mb-3">
               <label className="form-label">Назва статусу:</label>
               <input 
@@ -177,12 +178,12 @@ export default function Sidebar() {
         </Modal>
       )}
 
-      {/* Модальне вікно для підтвердження видалення статусу */}
+
       {showDeleteStatusModal && (
         <Modal>
-          <div style={{background: '#fff', borderRadius: '12px', padding: '32px 24px', minWidth: '320px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'}}>
-            <h4 style={{marginBottom: '18px'}}>Видалити статус?</h4>
-            <p style={{marginBottom: '24px'}}>
+          <div className="modal-ios-content">
+            <h4 className="mb-4">Видалити статус?</h4>
+            <p>
               Ви дійсно хочете видалити статус "{statusToDelete.charAt(0).toUpperCase() + statusToDelete.slice(1)}"? 
               Всі контакти з цим статусом будуть переміщені в "Other".
             </p>

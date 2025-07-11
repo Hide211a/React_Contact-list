@@ -5,6 +5,7 @@ import { MdDeleteForever } from "react-icons/md";
 import { useState } from "react";
 import { useSelector , useDispatch } from "react-redux";
 import { deleteContact , toggleFavorite} from "../../redux/action";
+import Modal from "../Modal/Modal";
 
 
 export default function ContactItem() {
@@ -111,36 +112,36 @@ export default function ContactItem() {
         </tbody>
       </table>
       {showModal && (
-        <div style={{position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999}}>
-          <div style={{background: '#fff', borderRadius: '12px', padding: '32px 24px', minWidth: '320px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)'}}>
-            <h4 style={{marginBottom: '18px'}}>Видалити контакт?</h4>
-            <p style={{marginBottom: '24px'}}>Ви дійсно хочете видалити цього контакта? Цю дію не можна скасувати.</p>
+        <Modal>
+          <div className="modal-ios-content">
+            <h4 className="mb-4">Видалити контакт?</h4>
+            <p>Ви дійсно хочете видалити цього контакта? Цю дію не можна скасувати.</p>
             <div style={{display: 'flex', gap: '16px', justifyContent: 'flex-end'}}>
               <button className="btn btn-secondary" onClick={handleCancelDelete}>Скасувати</button>
               <button className="btn btn-danger" onClick={handleConfirmDelete}>Видалити</button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
       {showInfoModal && selectedContact && (
-        <div style={{position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999}}>
-          <div style={{background: '#fff', borderRadius: '12px', padding: '32px 24px', minWidth: '340px', boxShadow: '0 8px 32px rgba(0,0,0,0.18)', maxWidth: '90vw'}}>
-            <h4 style={{marginBottom: '18px'}}>Інформація про контакт</h4>
-            <div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
-              <div><b>Ім'я:</b> {selectedContact.firstName}</div>
-              <div><b>Прізвище:</b> {selectedContact.lastName}</div>
-              <div><b>Телефон:</b> {selectedContact.phone}</div>
-              <div><b>Email:</b> {selectedContact.email}</div>
-              <div><b>Статус:</b> {selectedContact.status}</div>
-              <div><b>Стать:</b> {selectedContact.gender}</div>
-              <div><b>Avatar:</b> <img className="rounded-circle" src={`https://randomuser.me/api/portraits/${selectedContact.gender}/${selectedContact.avatar}.jpg`} alt="avatar" style={{width:'60px',height:'60px'}}/></div>
-              <div><b>Favorite:</b> {selectedContact.favorite ? 'Yes' : 'No'}</div>
+        <Modal>
+          <div className="modal-ios-content contact-info-modal">
+            <div className="contact-info-avatar-wrap">
+              <img className="contact-info-avatar" src={`https://randomuser.me/api/portraits/${selectedContact.gender}/${selectedContact.avatar}.jpg`} alt="avatar" />
             </div>
-            <div style={{display: 'flex', gap: '16px', justifyContent: 'flex-end', marginTop:'24px'}}>
-              <button className="btn btn-primary" onClick={handleCloseInfoModal}>Закрити</button>
-            </div>
+            <h2 className="contact-info-title">Інформація про контакт</h2>
+            <ul className="contact-info-list">
+              <li><span className="contact-info-label">Ім'я:</span> {selectedContact.firstName}</li>
+              <li><span className="contact-info-label">Прізвище:</span> {selectedContact.lastName}</li>
+              <li><span className="contact-info-label">Телефон:</span> {selectedContact.phone}</li>
+              <li><span className="contact-info-label">Email:</span> {selectedContact.email}</li>
+              <li><span className="contact-info-label">Статус:</span> {selectedContact.status}</li>
+              <li><span className="contact-info-label">Стать:</span> {selectedContact.gender}</li>
+              <li><span className="contact-info-label">Favorite:</span> {selectedContact.favorite ? 'Yes' : 'No'}</li>
+            </ul>
+            <button className="btn btn-primary contact-info-close" onClick={handleCloseInfoModal}>Закрити</button>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   )
