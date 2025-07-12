@@ -100,6 +100,11 @@ const initialContacts = loadContactsFromStorage() || [
           gender: "women",
           status: "family",
           favorite: false,
+          viber: "+380631234567",
+          telegram: "@anna_ivanova",
+          birthday: "1990-05-15",
+          address: "Київ, вул. Хрещатик, 1",
+          notes: "Сестра, любить каву"
         },
         {
           id: "1a2b3c4d-0002-4a2f-89d3-bb11a111a112",
@@ -111,6 +116,11 @@ const initialContacts = loadContactsFromStorage() || [
           gender: "men",
           status: "work",
           favorite: true,
+          viber: "+380991122334",
+          telegram: "@dmitry_kozlov",
+          birthday: "1985-12-03",
+          address: "Львів, вул. Свободи, 15",
+          notes: "Колега з роботи, відповідальний за проект"
         },
         {
           id: "1a2b3c4d-0003-4a2f-89d3-bb11a111a113",

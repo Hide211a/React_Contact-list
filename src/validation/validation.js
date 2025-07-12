@@ -8,7 +8,13 @@ export const contactValidationSchema = Yup.object().shape({
     avatar: Yup.string().required('Avatar is required'),
     gender: Yup.string().oneOf(['men','women'], 'Invalid gender').required('Gender is required'),
     status: Yup.string().required('Status is required'),
-    favorite: Yup.boolean()
+    favorite: Yup.boolean(),
+    // Додаткові поля (не обов'язкові)
+    viber: Yup.string().optional(),
+    telegram: Yup.string().optional(),
+    birthday: Yup.date().optional().max(new Date(), 'Birthday cannot be in the future'),
+    address: Yup.string().optional().max(200, 'Address too long'),
+    notes: Yup.string().optional().max(500, 'Notes too long')
 })
 
 export const statusValidationSchema = Yup.object().shape({

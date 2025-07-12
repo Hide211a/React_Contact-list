@@ -20,7 +20,15 @@ export default function EditContact({}) {
         return null
     }
     
-    const initialValues = {...contact}
+    const initialValues = {
+        ...contact,
+        // Забезпечуємо наявність всіх полів
+        viber: contact.viber || '',
+        telegram: contact.telegram || '',
+        birthday: contact.birthday || '',
+        address: contact.address || '',
+        notes: contact.notes || ''
+    }
 
     const handleSubmin = (values) => {
         dispatch(editContact(id, values))
@@ -85,6 +93,40 @@ export default function EditContact({}) {
                                 <label className='form-check-label fs-5' htmlFor="favorite">Favorite</label>
                                 <Field className='form-check-input m-1 fs-4' type='checkbox' name='favorite'/>
                             </div>
+                            
+                            <hr className="my-4" />
+                            <h4 className="text-center mb-4">Додаткова інформація</h4>
+                            
+                            <div className='mb-4'>
+                                <label htmlFor="viber">Viber</label>
+                                <Field className='form-control fs-5' type='text' name='viber' id='viber' placeholder='+380991234567'/>
+                                <ErrorMessage name='viber' component='p' className='text-danger position-absolute'/>
+                            </div>
+                            
+                            <div className='mb-4'>
+                                <label htmlFor="telegram">Telegram</label>
+                                <Field className='form-control fs-5' type='text' name='telegram' id='telegram' placeholder='@username'/>
+                                <ErrorMessage name='telegram' component='p' className='text-danger position-absolute'/>
+                            </div>
+                            
+                            <div className='mb-4'>
+                                <label htmlFor="birthday">День народження</label>
+                                <Field className='form-control fs-5' type='date' name='birthday' id='birthday'/>
+                                <ErrorMessage name='birthday' component='p' className='text-danger position-absolute'/>
+                            </div>
+                            
+                            <div className='mb-4'>
+                                <label htmlFor="address">Адреса</label>
+                                <Field className='form-control fs-5' type='text' name='address' id='address' placeholder='Місто, вулиця, номер'/>
+                                <ErrorMessage name='address' component='p' className='text-danger position-absolute'/>
+                            </div>
+                            
+                            <div className='mb-4'>
+                                <label htmlFor="notes">Нотатки</label>
+                                <Field className='form-control fs-5' as='textarea' name='notes' id='notes' rows='3' placeholder='Додаткові нотатки про контакт'/>
+                                <ErrorMessage name='notes' component='p' className='text-danger position-absolute'/>
+                            </div>
+                            
                             <button type='submit' className='btn btn-primary btn-lg form-control' disabled={isSubmitting}>Save</button>
                         </Form>
                     )}
