@@ -10,3 +10,19 @@ export const contactValidationSchema = Yup.object().shape({
     status: Yup.string().required('Status is required'),
     favorite: Yup.boolean()
 })
+
+export const statusValidationSchema = Yup.object().shape({
+  name: Yup.string()
+    .required('Назва статусу обовʼязкова')
+    .min(2, 'Мінімум 2 символи')
+    .max(16, 'Максимум 16 символів')
+    .matches(/^[a-zA-Zа-яА-Я0-9_\- ]+$/, 'Тільки літери, цифри, пробіли, - та _')
+    .test('unique', 'Такий статус вже існує', function(value) {
+      const { existingNames = [] } = this.options.context || {};
+      if (!value) return true;
+      return !existingNames.includes(value.trim().toLowerCase());
+    }),
+  color: Yup.string()
+    .required('Колір обовʼязковий')
+    .matches(/^#([0-9A-Fa-f]{6})$/, 'Некоректний hex-колір')
+});

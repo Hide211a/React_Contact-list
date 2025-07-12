@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { filterByStatus, clearAllFilters, addStatus, deleteStatus, editStatus } from "../../redux/action";
 import { useState } from "react";
 import Modal from "../Modal/Modal";
+import { statusValidationSchema } from '../../validation/validation';
 
 export default function Sidebar() {
 
@@ -42,15 +43,20 @@ export default function Sidebar() {
     dispatch(clearAllFilters());
   };
 
-  const handleAddStatus = () => {
-    if (newStatusName.trim()) {
-      dispatch(addStatus(newStatusName.trim().toLowerCase(), newStatusColor));
+  const handleAddStatus = async () => {
+    const trimmed = newStatusName.trim().toLowerCase();
+    try {
+      await statusValidationSchema.validate(
+        { name: trimmed, color: newStatusColor },
+        { context: { existingNames: Object.keys(contactStatuss) } }
+      );
+      dispatch(addStatus(trimmed, newStatusColor));
       setNewStatusName('');
       setNewStatusColor('#6c757d');
       setShowAddStatusModal(false);
       setStatusError('');
-    } else {
-      setStatusError('Назва статусу не може бути порожньою.');
+    } catch (err) {
+      setStatusError(err.message);
     }
   };
 
@@ -195,7 +201,23 @@ export default function Sidebar() {
                 setShowAddStatusModal(false);
                 setStatusError('');
               }}>Скасувати</button>
-              <button className="btn btn-primary" onClick={handleAddStatus}>Додати</button>
+              <button className="btn btn-primary" onClick={async () => {
+                // Валідація
+                const trimmed = newStatusName.trim().toLowerCase();
+                try {
+                  await statusValidationSchema.validate(
+                    { name: trimmed, color: newStatusColor },
+                    { context: { existingNames: Object.keys(contactStatuss) } }
+                  );
+                  dispatch(addStatus(trimmed, newStatusColor));
+                  setNewStatusName('');
+                  setNewStatusColor('#6c757d');
+                  setShowAddStatusModal(false);
+                  setStatusError('');
+                } catch (err) {
+                  setStatusError(err.message);
+                }
+              }}>Додати</button>
             </div>
           </div>
         </Modal>
@@ -254,20 +276,20 @@ export default function Sidebar() {
                 setShowEditStatusModal(false);
                 setStatusError('');
               }}>Скасувати</button>
-              <button className="btn btn-primary" onClick={() => {
+              <button className="btn btn-primary" onClick={async () => {
                 // Валідація
                 const trimmed = editStatusName.trim().toLowerCase();
-                if (!trimmed) {
-                  setStatusError('Назва статусу не може бути порожньою.');
-                  return;
+                try {
+                  await statusValidationSchema.validate(
+                    { name: trimmed, color: editStatusColor },
+                    { context: { existingNames: Object.keys(contactStatuss).filter(n => n !== statusToEdit) } }
+                  );
+                  dispatch(editStatus(statusToEdit, trimmed, editStatusColor));
+                  setShowEditStatusModal(false);
+                  setStatusError('');
+                } catch (err) {
+                  setStatusError(err.message);
                 }
-                if (trimmed !== statusToEdit && Object.keys(contactStatuss).includes(trimmed)) {
-                  setStatusError('Такий статус вже існує.');
-                  return;
-                }
-                dispatch(editStatus(statusToEdit, trimmed, editStatusColor));
-                setShowEditStatusModal(false);
-                setStatusError('');
               }}>Зберегти</button>
             </div>
           </div>
