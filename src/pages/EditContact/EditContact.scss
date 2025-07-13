@@ -157,3 +157,63 @@
   background: #23233a;
   color: #fff;
 }
+
+// Responsive Form Styles
+@media (max-width: 768px) {
+  .addcontact-form {
+    padding: 24px 20px 20px 20px;
+    min-width: 300px;
+    max-width: 100%;
+  }
+  
+  .addcontact-form h1 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+  
+  .addcontact-form h4 {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+  
+  .addcontact-form .form-control {
+    font-size: 1rem;
+    padding: 8px 12px;
+  }
+  
+  .addcontact-form .btn {
+    font-size: 1.1rem;
+    padding: 12px 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .addcontact-form {
+    padding: 20px 16px 16px 16px;
+    min-width: 280px;
+  }
+  
+  .addcontact-form h1 {
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+  }
+  
+  .addcontact-form h4 {
+    font-size: 1.1rem;
+    margin-bottom: 18px;
+  }
+  
+  .addcontact-form .form-control {
+    font-size: 0.95rem;
+    padding: 6px 10px;
+  }
+  
+  .addcontact-form .btn {
+    font-size: 1rem;
+    padding: 10px 0;
+  }
+  
+  .addcontact-form .mb-4 {
+    margin-bottom: 18px !important;
+  }
+}

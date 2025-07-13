@@ -77,4 +77,184 @@
 
 .search-form-ios .form-control[type="search"] {
   padding-left: 38px;
+}
+
+// Favorite Only Checkbox Styles
+.favorite-only-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.08rem;
+  font-weight: 500;
+  color: var(--text-main, #fff);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.18s;
+}
+
+.favorite-only-check .favorite-checkbox {
+  accent-color: #e74c3c;
+  width: 1.25em;
+  height: 1.25em;
+  margin-right: 4px;
+  transition: box-shadow 0.18s;
+  box-shadow: 0 0 0 0 rgba(231,76,60,0.2);
+}
+
+.favorite-only-check .favorite-checkbox:checked {
+  box-shadow: 0 0 0 3px rgba(231,76,60,0.18);
+}
+
+.favorite-only-check .favorite-heart {
+  color: #e74c3c;
+  font-size: 1.2em;
+  margin-right: 2px;
+  transition: transform 0.18s;
+}
+
+.favorite-only-check .favorite-checkbox:checked + .favorite-heart {
+  transform: scale(1.15) rotate(-8deg);
+}
+
+.heart-checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.heart-checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #23232a;
+  border: 2px solid #bbb;
+  margin-right: 8px;
+  transition: border 0.18s, box-shadow 0.18s, background 0.18s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  cursor: pointer;
+  position: relative;
+}
+
+.heart-checkbox svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  fill: #bbb;
+  transition: fill 0.18s, transform 0.18s;
+}
+
+.heart-checkbox-input:checked + .heart-checkbox {
+  border-color: #e74c3c;
+  background: #fff0f0;
+  box-shadow: 0 2px 8px rgba(231,76,60,0.10);
+}
+
+.heart-checkbox-input:checked + .heart-checkbox svg {
+  fill: #e74c3c;
+  transform: scale(1.15) rotate(-8deg);
+}
+
+.heart-checkbox-input:focus + .heart-checkbox {
+  box-shadow: 0 0 0 2px #e74c3c44;
+  outline: none;
+}
+
+.favorite-label {
+  font-size: 1.08rem;
+  font-weight: 500;
+  color: var(--text-main, #fff);
+  user-select: none;
+  transition: color 0.18s;
+}
+
+@media (max-width: 768px) {
+  .header-ios {
+    padding: 12px 16px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .header-ios .navbar-brand {
+    font-size: 1.1rem;
+    margin-right: 16px;
+    padding: 4px 12px;
+  }
+  
+  .header-ios .form-control[type="search"] {
+    font-size: 0.95rem;
+    padding: 8px 12px 8px 36px;
+  }
+  
+  .search-icon-ios {
+    left: 10px;
+    font-size: 1.1em;
+  }
+
+  .favorite-only-check {
+    font-size: 1rem;
+    gap: 6px;
+  }
+  .favorite-only-check .favorite-heart {
+    font-size: 1.1em;
+  }
+  .heart-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+  }
+  .heart-checkbox svg {
+    width: 16px;
+    height: 16px;
+  }
+  .favorite-label {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-ios {
+    padding: 10px 12px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .header-ios .navbar-brand {
+    font-size: 1rem;
+    margin-right: 12px;
+    padding: 3px 8px;
+  }
+  
+  .header-ios .form-control[type="search"] {
+    font-size: 0.9rem;
+    padding: 6px 10px 6px 32px;
+  }
+  
+  .search-icon-ios {
+    left: 8px;
+    font-size: 1em;
+  }
+
+  .favorite-only-check {
+    font-size: 0.97rem;
+    gap: 5px;
+  }
+  .favorite-only-check .favorite-heart {
+    font-size: 1em;
+  }
+  .heart-checkbox {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+  }
+  .heart-checkbox svg {
+    width: 14px;
+    height: 14px;
+  }
+  .favorite-label {
+    font-size: 0.97rem;
+  }
 } 

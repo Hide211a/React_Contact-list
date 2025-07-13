@@ -4,9 +4,10 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
 import { IoShareOutline } from "react-icons/io5";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { useState } from "react";
 import { useSelector , useDispatch } from "react-redux";
-import { deleteContact , toggleFavorite} from "../../redux/action";
+import { deleteContact , toggleFavorite, clearAllFilters } from "../../redux/action";
 import Modal from "../Modal/Modal";
 
 
@@ -20,20 +21,44 @@ export default function ContactItem() {
   const [contactToCall, setContactToCall] = useState(null);
   const [showShareModal, setShowShareModal] = useState(false);
   const [contactToShare, setContactToShare] = useState(null);
+  const [sortKey, setSortKey] = useState('firstName');
+  const [sortOrder, setSortOrder] = useState('asc'); // 'asc' | 'desc'
 
   const contacts = useSelector(state => state.contacts)
   const search = useSelector(state => state.search)
   const statusFilter = useSelector(state => state.statusFilter)
   const contactStatuss = useSelector(state => state.contactStatuss)
+  const favoriteOnly = useSelector(state => state.favoriteOnly)
   const dispatch = useDispatch()
 
   let filteredContacts = contacts;
   
 
-  if (search) {
-    filteredContacts = filteredContacts.filter(contact => 
-      `${contact.firstName} ${contact.lastName} ${contact.email} ${contact.phone}`.toLowerCase().includes(search.toLowerCase())
+  // Додаю функцію для підсвічування знайденого тексту
+  function highlightText(text, search) {
+    if (!search) return text;
+    const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return String(text).split(regex).map((part, i) =>
+      regex.test(part) ? <mark key={i}>{part}</mark> : part
     );
+  }
+
+  if (search) {
+    filteredContacts = filteredContacts.filter(contact => {
+      const fields = [
+        contact.firstName,
+        contact.lastName,
+        contact.email,
+        contact.phone,
+        contact.viber,
+        contact.telegram,
+        contact.birthday,
+        contact.address,
+        contact.notes
+        // статус і гендер не враховуємо у пошуку
+      ];
+      return fields.some(field => field && String(field).toLowerCase().includes(search.toLowerCase()));
+    });
   }
   
 
@@ -47,6 +72,10 @@ export default function ContactItem() {
     } else {
       filteredContacts = filteredContacts.filter(contact => contact.status === statusFilter);
     }
+  }
+
+  if (favoriteOnly) {
+    filteredContacts = filteredContacts.filter(contact => contact.favorite);
   }
 
   const handleDeleteClick = (id) => {
@@ -222,56 +251,180 @@ ${contactToShare.email}`;
     }
   };
 
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortOrder('asc');
+    }
+  };
+
+  // Сортування
+  const compare = (a, b) => {
+    let valA = a[sortKey];
+    let valB = b[sortKey];
+    // Для улюблених - true/false
+    if (sortKey === 'favorite') {
+      valA = a.favorite ? 1 : 0;
+      valB = b.favorite ? 1 : 0;
+    }
+    // Для статусу/статі - привести до рядка
+    if (typeof valA === 'string') valA = valA.toLowerCase();
+    if (typeof valB === 'string') valB = valB.toLowerCase();
+    if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+    if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  };
+  filteredContacts = [...filteredContacts].sort(compare);
+
   return(
     <div>
-      <table className="table">
-        <thead>
-          <tr className="align-middle text-center fs-5 position-sticky top-0">
-            <th className="text-primary" scope="col">icon</th>
-            <th className="text-primary" scope="col">Name</th>
-            <th className="text-primary" scope="col">Phone/Email</th>
-            <th className="text-primary" scope="col">Status</th>
-            <th className="text-primary" scope="col">Gender</th>
-            <th className="text-primary" scope="col">Edit/Del</th>
-          </tr>
-        </thead>
-        <tbody>
-        {filteredContacts.map(contact => (
-            <tr key={contact.id} className="align-middle text-center" style={{cursor:'pointer'}} onClick={(e) => handleRowClick(contact, e)}>
-            <td className='position-relative' scope="row">
-              <img className={`rounded-circle border border-3 ${contact.gender === 'women' ? 'border-danger' : 'border-primary' }`} src={`https://randomuser.me/api/portraits/${contact.gender}/${contact.avatar}.jpg`} alt="" />
+      {/* Desktop Table View */}
+      <div className="d-none d-lg-block">
+        {filteredContacts.length === 0 ? (
+          <div className="empty-state text-center py-5">
+            <div style={{fontSize: '3.5rem', marginBottom: 16}}>🔍</div>
+            <h4 className="mb-3">Нічого не знайдено</h4>
+            <p className="mb-4">Спробуйте змінити запит або скинути фільтри.</p>
+            <button className="btn btn-outline-primary" onClick={() => dispatch(clearAllFilters())}>Скинути фільтри</button>
+          </div>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr className="align-middle text-center fs-5 position-sticky top-0">
+                <th className="text-primary" scope="col">icon</th>
+                <th className="text-primary" scope="col" style={{cursor:'pointer'}} onClick={() => handleSort('firstName')}>
+                  Name {sortKey === 'firstName' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </th>
+                <th className="text-primary" scope="col" style={{cursor:'pointer'}} onClick={() => handleSort('phone')}>
+                  Phone/Email {sortKey === 'phone' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </th>
+                <th className="text-primary" scope="col" style={{cursor:'pointer'}} onClick={() => handleSort('status')}>
+                  Status {sortKey === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </th>
+                <th className="text-primary" scope="col" style={{cursor:'pointer'}} onClick={() => handleSort('gender')}>
+                  Gender {sortKey === 'gender' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </th>
+                <th className="text-primary" scope="col" style={{cursor:'pointer'}} onClick={() => handleSort('favorite')}>
+                  Edit/Del {sortKey === 'favorite' && (sortOrder === 'asc' ? '↑' : '↓')}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+            {filteredContacts.map(contact => (
+                <tr key={contact.id} className="align-middle text-center" style={{cursor:'pointer'}} onClick={(e) => handleRowClick(contact, e)}>
+                <td className='position-relative' scope="row">
+                  <img className={`rounded-circle border border-3 ${contact.gender === 'women' ? 'border-danger' : 'border-primary' }`} src={`https://randomuser.me/api/portraits/${contact.gender}/${contact.avatar}.jpg`} alt="" />
 
-              <button className="favoriteBtn" onClick={(e) => handleFavoriteClick(e, contact.id)}>
-                  {contact.favorite ? '♥' : '♡' }
-              </button>
+                  <button className="favoriteBtn" onClick={(e) => handleFavoriteClick(e, contact.id)}>
+                    {contact.favorite ? (
+                      <span className="fav-emoji" role="img" aria-label="favorite">❤️</span>
+                    ) : (
+                      <span className="fav-emoji" role="img" aria-label="not favorite">🤍</span>
+                    )}
+                  </button>
 
-            </td>
-            <td className="fs-4">{contact.firstName}<br/>{contact.lastName}</td>
-            <td className="fs-5">{contact.phone}<br/>{contact.email}</td>
-            <td className="fs-5 text-uppercase fw-bold">{contact.status}</td>
-            <td className="fs-5 text-uppercase fw-bold">{contact.gender}</td>
-            <td>
-              <button 
-                className="btn btn-link p-0 me-2" 
-                onClick={(e) => handleCallClick(e, contact)}
-                title="Подзвонити"
-              >
-                <FiPhone size={'30px'} color="green"/>
-              </button>
-              <button 
-                className="btn btn-link p-0 me-2" 
-                onClick={(e) => handleShareClick(e, contact)}
-                title="Поділитися"
-              >
-                <IoShareOutline size={'30px'} color="blue"/>
-              </button>
-              <Link to={`/edit-contact/${contact.id}`}><FaRegEdit size={'30px'} color="yellow"/></Link>
-              <MdDeleteForever style={{cursor: 'pointer'}} size={'30px'} color="red" onClick={() => handleDeleteClick(contact.id)}/>
-            </td>
-          </tr>
-        ))}
-        </tbody>
-      </table>
+                </td>
+                <td className="fs-4">{highlightText(contact.firstName, search)}<br/>{highlightText(contact.lastName, search)}</td>
+                <td className="fs-5">{highlightText(contact.phone, search)}<br/>{highlightText(contact.email, search)}</td>
+                <td className="fs-5 text-uppercase fw-bold">{highlightText(contact.status, search)}</td>
+                <td className="fs-5 text-uppercase fw-bold">{highlightText(contact.gender, search)}</td>
+                <td>
+                  <button 
+                    className="btn btn-link p-0 me-2" 
+                    onClick={(e) => handleCallClick(e, contact)}
+                    title="Подзвонити"
+                  >
+                    <FiPhone size={'30px'} color="green"/>
+                  </button>
+                  <button 
+                    className="btn btn-link p-0 me-2" 
+                    onClick={(e) => handleShareClick(e, contact)}
+                    title="Поділитися"
+                  >
+                    <IoShareOutline size={'30px'} color="blue"/>
+                  </button>
+                  <Link to={`/edit-contact/${contact.id}`}><FaRegEdit size={'30px'} color="yellow"/></Link>
+                  <MdDeleteForever style={{cursor: 'pointer'}} size={'30px'} color="red" onClick={() => handleDeleteClick(contact.id)}/>
+                </td>
+              </tr>
+            ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="d-block d-lg-none">
+        {filteredContacts.length === 0 ? (
+          <div className="empty-state text-center py-5">
+            <div style={{fontSize: '3.5rem', marginBottom: 16}}>🔍</div>
+            <h4 className="mb-3">Нічого не знайдено</h4>
+            <p className="mb-4">Спробуйте змінити запит або скинути фільтри.</p>
+            <button className="btn btn-outline-primary" onClick={() => dispatch(clearAllFilters())}>Скинути фільтри</button>
+          </div>
+        ) : (
+          <div className="row g-3">
+            {filteredContacts.map(contact => (
+              <div key={contact.id} className="col-12">
+                <div className="contact-card" onClick={(e) => handleRowClick(contact, e)}>
+                  <div className="contact-card-header">
+                    <div className="contact-card-avatar">
+                      <img 
+                        className={`rounded-circle border border-3 ${contact.gender === 'women' ? 'border-danger' : 'border-primary'}`} 
+                        src={`https://randomuser.me/api/portraits/${contact.gender}/${contact.avatar}.jpg`} 
+                        alt="" 
+                      />
+                      <button 
+                        className="contact-card-favorite" 
+                        onClick={(e) => handleFavoriteClick(e, contact.id)}
+                      >
+                        {contact.favorite ? '♥' : '♡'}
+                      </button>
+                    </div>
+                    <div className="contact-card-info">
+                      <h5 className="contact-card-name">{highlightText(contact.firstName, search)} {highlightText(contact.lastName, search)}</h5>
+                      <p className="contact-card-phone">{highlightText(contact.phone, search)}</p>
+                      <p className="contact-card-email">{highlightText(contact.email, search)}</p>
+                      <div className="contact-card-status">
+                        <span className="badge bg-primary">{highlightText(contact.status, search)}</span>
+                        <span className="badge bg-secondary ms-2">{highlightText(contact.gender, search)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="contact-card-actions">
+                    <button 
+                      className="btn btn-sm btn-success me-2" 
+                      onClick={(e) => handleCallClick(e, contact)}
+                      title="Подзвонити"
+                    >
+                      <FiPhone size={'16px'} />
+                    </button>
+                    <button 
+                      className="btn btn-sm btn-info me-2" 
+                      onClick={(e) => handleShareClick(e, contact)}
+                      title="Поділитися"
+                    >
+                      <IoShareOutline size={'16px'} />
+                    </button>
+                    <Link to={`/edit-contact/${contact.id}`} className="btn btn-sm btn-warning me-2">
+                      <FaRegEdit size={'16px'} />
+                    </Link>
+                    <button 
+                      className="btn btn-sm btn-danger" 
+                      onClick={() => handleDeleteClick(contact.id)}
+                      title="Видалити"
+                    >
+                      <MdDeleteForever size={'16px'} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       {showModal && (
         <Modal>
           <div className="modal-ios-content">

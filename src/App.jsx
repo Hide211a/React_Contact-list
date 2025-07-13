@@ -14,14 +14,14 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-      <Header/>
-      <Routes>
-        <Route path='/' element={<ContactList/>}/>
-        <Route path='/add-contact' element={<AddContact/>}/>
-        <Route path='/edit-contact/:id' element={<EditContact/>}/>
-        <Route path='*' element={<NotFound/>}/>
-      </Routes>
-    </Router>
+        <Header/>
+        <Routes>
+          <Route path='/' element={<div className="ios-font"><ContactList/></div>}/>
+          <Route path='/add-contact' element={<div className="ios-font"><AddContact/></div>}/>
+          <Route path='/edit-contact/:id' element={<div className="ios-font"><EditContact/></div>}/>
+          <Route path='*' element={<NotFound/>}/>
+        </Routes>
+      </Router>
     </Provider>
   )
 }

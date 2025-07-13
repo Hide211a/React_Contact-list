@@ -221,7 +221,8 @@ const initialState = {
     contacts: initialContacts,
     search: '',
     statusFilter: '',
-    contactStatuss: initialContactStatuss
+    contactStatuss: initialContactStatuss,
+    favoriteOnly: false
 }
 
 const reducer = (state = initialState, action) => {
@@ -353,6 +354,11 @@ const reducer = (state = initialState, action) => {
                 contactStatuss: updatedStats
             };
         }
+        case 'TOGGLE_FAVORITE_FILTER':
+            return {
+                ...state,
+                favoriteOnly: !state.favoriteOnly
+            }
         default:
             return state;
     }

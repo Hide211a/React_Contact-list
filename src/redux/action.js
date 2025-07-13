@@ -57,6 +57,12 @@ export const toggleFavorite = (id) => {
     }
 }
 
+export const toggleFavoriteFilter = () => {
+    return {
+        type: 'TOGGLE_FAVORITE_FILTER'
+    }
+}
+
 export const addStatus = (status, bgColor) => {
     return {
         type: ADD_STATUS,
